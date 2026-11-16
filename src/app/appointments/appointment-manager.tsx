@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Customer={id:string;full_name:string;phone_e164:string};
@@ -15,12 +15,13 @@ export default function AppointmentManager({businessId,customers,services,initia
   const [showForm,setShowForm]=useState(false);
   const [customerId,setCustomerId]=useState(customers[0]?.id??"");
   const [serviceId,setServiceId]=useState(services.find(s=>s.id)?.id??"");
-  const [date,setDate]=useState(new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata"}).format(new Date()));
+  const today=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata"}).format(new Date());
+  const [date,setDate]=useState(today);
   const [time,setTime]=useState("10:00");
   const [notes,setNotes]=useState("");
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState("");
-  const activeServices=useMemo(()=>services.filter(s=>true),[services]);
+  const activeServices=services;
 
   async function createAppointment(event:FormEvent<HTMLFormElement>) {
     event.preventDefault();setBusy(true);setMessage("");
@@ -65,7 +66,7 @@ export default function AppointmentManager({businessId,customers,services,initia
         <div className="customer-fields">
           <label>Customer<select required value={customerId} onChange={e=>setCustomerId(e.target.value)}>{customers.map(c=><option key={c.id} value={c.id}>{c.full_name} · {c.phone_e164}</option>)}</select></label>
           <label>Service<select required value={serviceId} onChange={e=>setServiceId(e.target.value)}>{activeServices.map(s=><option key={s.id} value={s.id}>{s.name} · {s.duration_minutes} min</option>)}</select></label>
-          <label>Date<input required type="date" min={date} value={date} onChange={e=>setDate(e.target.value)} /></label>
+          <label>Date<input required type="date" min={today} value={date} onChange={e=>setDate(e.target.value)} /></label>
           <label>Start time (IST)<input required type="time" value={time} onChange={e=>setTime(e.target.value)} /></label>
           <label className="notes-field">Notes (optional)<input maxLength={500} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Any booking notes" /></label>
         </div>
