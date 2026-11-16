@@ -24,7 +24,8 @@ A compliant salon customer-management and appointment-messaging platform built a
 2. Install dependencies: `npm install`.
 3. Copy `.env.example` to `.env.local`.
 4. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` using the values from the Supabase project Connect dialog.
-5. Start development: `npm run dev`.
+5. Set server-only `SUPABASE_SECRET_KEY` and a long random `CRON_SECRET` in the hosting environment. Add Meta credentials only after official Cloud API onboarding.
+6. Start development: `npm run dev`.
 
 Do not place Supabase secret/service-role keys or Meta access tokens in any `NEXT_PUBLIC_*` variable or browser code.
 
@@ -48,6 +49,10 @@ on conflict (business_id, user_id) do nothing;
 
 4. The owner can then sign in at `/login`. The app checks the signed-in user and database membership; row-level security controls access to salon records.
 
+## Reminder validation worker
+
+A protected cron endpoint is available at `/api/cron/reminders`. `vercel.json` schedules it every five minutes on Vercel. Configure `CRON_SECRET` in the deployment environment; Vercel sends it as a Bearer token for scheduled invocations. The endpoint rechecks appointment status, customer opt-in/opt-out, and approved Utility templates. It is currently **dry-run only**: it never calls Meta, never sends a message, and never marks a reminder as sent. It cancels queue rows that are no longer eligible. A hosting plan that supports the configured cron frequency is required.
+
 ## WhatsApp setup
 
 Configure a Meta app with the WhatsApp product. Set the webhook URL to:
@@ -65,6 +70,9 @@ Only message people who have provided valid consent. Business-initiated messages
 - Supabase SSR browser/server clients and session-refresh middleware
 - Email/password login and sign-out
 - Customer list backed by Supabase, with search and customer creation
-- Customer WhatsApp consent recorded separately and defaults to off
+- Customer WhatsApp consent and opt-out management
+- Service and appointment management
+- Message-template drafts and reminder queue scheduling
+- Protected, scheduled reminder validation endpoint (dry-run only)
 
-Still pending: create the salon owner's Auth account and workspace membership, configure deployment environment variables, verify a full production build, and implement appointments, services, campaigns, and WhatsApp Cloud API onboarding.
+Still pending: connect a verified WhatsApp Cloud API number, submit/sync Meta templates, implement the actual message dispatcher and delivery webhooks, create the salon owner's Auth account and workspace membership, deploy, and complete end-to-end testing.
