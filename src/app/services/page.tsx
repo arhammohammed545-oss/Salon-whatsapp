@@ -3,7 +3,7 @@ import ServiceManager from "./service-manager";
 
 const navItems = [
   ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
-  ["Services", "✂", "/services"], ["Campaigns", "✉", "#"], ["Message templates", "▤", "/templates"], ["Reminders", "◷", "/reminders"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
+  ["Services", "✂", "/services"], ["Campaigns", "✉", "/campaigns"], ["Message templates", "▤", "/templates"], ["Reminders", "◷", "/reminders"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
 export default async function ServicesPage() {
