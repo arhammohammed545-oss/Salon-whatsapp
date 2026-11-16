@@ -57,7 +57,7 @@ export default function AppointmentManager({businessId,customers,services,initia
       if(conflict&&conflict.length){setMessage("This time overlaps an existing appointment. Please choose another slot.");setBusy(false);return;}
       const {data,error}=await supabase.from("appointments").insert({
         business_id:businessId,customer_id:customer.id,service_id:service.id,service_name:service.name,
-        starts_at:start.toISOString(),ends_at:end.toISOString(),status:"booked",
+        starts_at:start.toISOString(),ends_at:end.toISOString(),status:"pending_approval",
         booking_channel:"dashboard",confirmation_mode:"owner_approval",notes:notes.trim()||null
       }).select("id,customer_id,service_name,starts_at,ends_at,status,notes,booking_channel,confirmation_mode,approval_reason,requested_at").single();
       if(error)throw error;
