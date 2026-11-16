@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 
 const navItems = [
-  ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
+  ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"], ["Availability", "◷", "/availability"],
   ["Services", "✂", "/services"], ["Inbox", "☷", "/inbox"], ["Campaigns", "✉", "/campaigns"],
   ["Message templates", "▤", "/templates"], ["Reminders", "◷", "/reminders"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
