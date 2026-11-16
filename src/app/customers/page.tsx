@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 const navItems = [
   ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
   ["Services", "✂", "/services"],
-  ["Campaigns", "✉", "#"], ["Message templates", "▤", "/templates"], ["Reminders", "◷", "/reminders"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
+  ["Campaigns", "✉", "/campaigns"], ["Message templates", "▤", "/templates"], ["Reminders", "◷", "/reminders"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
 export default async function CustomersPage() {
