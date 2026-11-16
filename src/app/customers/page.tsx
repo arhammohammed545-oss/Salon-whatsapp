@@ -34,7 +34,7 @@ export default async function CustomersPage() {
 
   const [{ data: business }, { data: customers }] = await Promise.all([
     supabase.from("businesses").select("id, name").eq("id", membership.business_id).maybeSingle(),
-    supabase.from("customers").select("id, full_name, phone_e164, whatsapp_opt_in, notes, created_at")
+    supabase.from("customers").select("id, full_name, phone_e164, whatsapp_opt_in, opt_in_at, opt_in_source, opted_out_at, notes, created_at")
       .eq("business_id", membership.business_id).order("created_at", { ascending: false }),
   ]);
 
