@@ -22,7 +22,7 @@ export default function Home() {
       <aside className="sidebar">
         <div className="brand"><span className="brand-mark">✂</span><span>glowdesk<small>SALON WORKSPACE</small></span></div>
         <div className="workspace-label">WORKSPACE</div>
-        <nav>{navItems.map(([label, icon, active]) => <a className={active ? "nav-link active" : "nav-link"} href="#" key={label}><span>{icon}</span>{label}</a>)}</nav>
+        <nav>{navItems.map(([label, icon, active]) => <a className={active ? "nav-link active" : "nav-link"} href={label === "Customers" ? "/customers" : "#"} key={label}><span>{icon}</span>{label}</a>)}</nav>
         <div className="sidebar-bottom"><div className="help-card"><strong>Need a hand?</strong><p>Your salon setup checklist is ready.</p><span>View setup guide ↗</span></div><div className="profile"><div className="avatar">S</div><div><strong>Salon owner</strong><small>Administrator</small></div><span className="dots">•••</span></div></div>
       </aside>
       <section className="main-area">
