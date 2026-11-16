@@ -1,9 +1,44 @@
+import CustomerManager from "./customer-manager";
+import { createClient } from "@/lib/supabase/server";
+
 const navItems = [
   ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "#"],
   ["Campaigns", "✉", "#"], ["Message templates", "▤", "#"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
-export default function CustomersPage() {
+export default async function CustomersPage() {
+  const supabase = await createClient();
+  const { data: authData } = await supabase.auth.getClaims();
+  const userId = authData?.claims?.sub;
+
+  if (!userId) return null;
+
+  const { data: membership } = await supabase
+    .from("business_members")
+    .select("business_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if (!membership) {
+    return (
+      <main className="login-shell"><section className="login-card">
+        <a className="brand login-brand" href="/"><span className="brand-mark">✂</span><span>glowdesk<small>SALON WORKSPACE</small></span></a>
+        <p className="eyebrow">KITH AND KIN · OWNER ACCESS</p><h1>Workspace access pending</h1>
+        <p className="login-subtitle">Your account is signed in, but it has not yet been linked to the Kith and Kin workspace. Ask the administrator to grant your owner access.</p>
+        <form action="/auth/signout" method="post"><button className="login-submit" type="submit">Sign out</button></form>
+      </section></main>
+    );
+  }
+
+  const [{ data: business }, { data: customers }] = await Promise.all([
+    supabase.from("businesses").select("id, name").eq("id", membership.business_id).maybeSingle(),
+    supabase.from("customers").select("id, full_name, phone_e164, whatsapp_opt_in, notes, created_at")
+      .eq("business_id", membership.business_id).order("created_at", { ascending: false }),
+  ]);
+
+  if (!business) return null;
+
   return (
     <main className="shell">
       <aside className="sidebar">
@@ -15,23 +50,9 @@ export default function CustomersPage() {
       <section className="main-area">
         <header className="topbar"><div className="crumb"><a href="/">Workspace</a><span>/</span> Customers</div><div className="top-actions"><span className="connection"><i/> WhatsApp not connected</span><div className="avatar small">S</div></div></header>
         <div className="content">
-          <div className="welcome-row"><div><p className="eyebrow">CUSTOMER RELATIONSHIPS</p><h1>Customers</h1><p className="subhead">A clear view of the people who make Kith and Kin special.</p></div><span className="date-pill">Kith and Kin</span></div>
-          <section className="customer-toolbar">
-            <div className="customer-search"><span>⌕</span><input aria-label="Search customers" placeholder="Search by name or phone number" disabled /></div>
-            <button className="primary-button" type="button" disabled title="Available after owner sign-in is enabled">＋ Add customer</button>
-          </section>
-          <section className="panel customer-empty">
-            <div className="customer-empty-icon">♙</div>
-            <h2>Your customer list starts here</h2>
-            <p>Once secure owner sign-in is enabled, you can add customers, keep their contact details organised and view their appointment history.</p>
-            <div className="customer-next-steps">
-              <div><span>01</span><strong>Customer profiles</strong><small>Name, phone number and notes</small></div>
-              <div><span>02</span><strong>Messaging consent</strong><small>Record opt-in and opt-out preferences</small></div>
-              <div><span>03</span><strong>Visit history</strong><small>Appointments and customer activity</small></div>
-            </div>
-            <span className="setup-note"><i/> Secure customer storage is the next build step</span>
-          </section>
-          <footer>Glowdesk · Kith and Kin <span>Customer information stays private to the salon.</span></footer>
+          <div className="welcome-row"><div><p className="eyebrow">CUSTOMER RELATIONSHIPS</p><h1>Customers</h1><p className="subhead">A clear view of the people who make {business.name} special.</p></div><span className="date-pill">{business.name}</span></div>
+          <CustomerManager businessId={business.id} initialCustomers={customers ?? []} />
+          <footer>Glowdesk · {business.name} <span>Customer information stays private to the salon.</span></footer>
         </div>
       </section>
     </main>
