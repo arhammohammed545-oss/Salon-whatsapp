@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import AppointmentManager from "./appointment-manager";
 
 const navItems = [
-  ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
+  ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"], ["Availability", "◷", "/availability"],
   ["Services", "✂", "/services"], ["Campaigns", "✉", "/campaigns"], ["Message templates", "▤", "/templates"], ["Reminders", "◷", "/reminders"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
@@ -18,7 +18,7 @@ export default async function AppointmentsPage() {
   const [{data:customers},{data:services},{data:rawAppointments}]=await Promise.all([
     supabase.from("customers").select("id,full_name,phone_e164").eq("business_id",business.id).order("full_name"),
     supabase.from("services").select("id,name,duration_minutes,price").eq("business_id",business.id).eq("is_active",true).order("name"),
-    supabase.from("appointments").select("id,customer_id,service_name,starts_at,ends_at,status,notes").eq("business_id",business.id).order("starts_at",{ascending:false}).limit(100)
+    supabase.from("appointments").select("id,customer_id,service_name,starts_at,ends_at,status,notes,booking_channel,confirmation_mode,approval_reason,requested_at").eq("business_id",business.id).order("starts_at",{ascending:false}).limit(100)
   ]);
   const customerMap=new Map((customers??[]).map(c=>[c.id,c]));
   const appointments=(rawAppointments??[]).map(a=>({...a,customer:customerMap.get(a.customer_id)??null}));
