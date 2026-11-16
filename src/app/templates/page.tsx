@@ -3,7 +3,7 @@ import TemplateManager from "./template-manager";
 
 const navItems = [
   ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
-  ["Services", "✂", "/services"], ["Campaigns", "✉", "#"], ["Message templates", "▤", "/templates"],
+  ["Services", "✂", "/services"], ["Campaigns", "✉", "/campaigns"], ["Message templates", "▤", "/templates"],
   ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
