@@ -3,7 +3,7 @@ import AppointmentManager from "./appointment-manager";
 
 const navItems = [
   ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
-  ["Services", "✂", "/services"], ["Campaigns", "✉", "#"], ["Message templates", "▤", "#"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
+  ["Services", "✂", "/services"], ["Campaigns", "✉", "#"], ["Message templates", "▤", "/templates"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
 export default async function AppointmentsPage() {
