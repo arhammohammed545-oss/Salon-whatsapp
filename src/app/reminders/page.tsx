@@ -3,7 +3,7 @@ import ReminderCenter from "./reminder-center";
 
 const navItems = [
   ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
-  ["Services", "✂", "/services"], ["Campaigns", "✉", "#"], ["Message templates", "▤", "/templates"],
+  ["Services", "✂", "/services"], ["Campaigns", "✉", "/campaigns"], ["Message templates", "▤", "/templates"],
   ["Reminders", "◷", "/reminders"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
