@@ -74,5 +74,8 @@ Only message people who have provided valid consent. Business-initiated messages
 - Service and appointment management
 - Message-template drafts and reminder queue scheduling
 - Protected, scheduled reminder validation endpoint (dry-run only)
+- WhatsApp webhook GET verification and POST signature validation
+- Idempotent persistence of inbound message events and sent/delivered/read/failed status events
+- Inbound and outbound message log records (webhook ingestion only; no auto-replies)
 
-Still pending: connect a verified WhatsApp Cloud API number, submit/sync Meta templates, implement the actual message dispatcher and delivery webhooks, create the salon owner's Auth account and workspace membership, deploy, and complete end-to-end testing.
+Still pending: connect a verified WhatsApp Cloud API number, submit/sync Meta templates, implement the actual outbound message dispatcher and inbound conversation handling, create the salon owner's Auth account and workspace membership, deploy, and complete end-to-end testing.
