@@ -39,6 +39,19 @@ export default function AppointmentManager({businessId,customers,services,initia
     const end=new Date(start.getTime()+service.duration_minutes*60000);
     try {
       const supabase=createClient();
+      const dayOfWeek=new Date(date+"T12:00:00+05:30").getUTCDay();
+      const istTime=(value:Date)=>new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(value);
+      const istDate=(value:Date)=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata"}).format(value);
+      const startTime=istTime(start),endTime=istTime(end);
+      if(istDate(end)!==date){setMessage("This service would finish after the salon's local day ends. Choose an earlier time.");setBusy(false);return;}
+      const {data:hours,error:hoursError}=await supabase.from("salon_business_hours").select("is_closed,opens_at,closes_at,break_starts_at,break_ends_at").eq("business_id",businessId).eq("day_of_week",dayOfWeek).maybeSingle();
+      if(hoursError)throw hoursError;
+      if(!hours||hours.is_closed){setMessage("The salon is marked closed on this day, or its working hours have not been configured.");setBusy(false);return;}
+      if(!hours.opens_at||!hours.closes_at||startTime<hours.opens_at.slice(0,5)||endTime>hours.closes_at.slice(0,5)){setMessage("Choose a time within the salon's working hours.");setBusy(false);return;}
+      if(hours.break_starts_at&&hours.break_ends_at&&startTime<hours.break_ends_at.slice(0,5)&&endTime>hours.break_starts_at.slice(0,5)){setMessage("This appointment overlaps the salon's break. Please choose another time.");setBusy(false);return;}
+      const {data:closure,error:closureError}=await supabase.from("salon_closures").select("id").eq("business_id",businessId).eq("closed_on",date).maybeSingle();
+      if(closureError)throw closureError;
+      if(closure){setMessage("The salon is closed on this date. Please choose another day.");setBusy(false);return;}
       const {data:conflict,error:conflictError}=await supabase.from("appointments").select("id").eq("business_id",businessId).in("status",["booked","pending_approval","confirmed"]).lt("starts_at",end.toISOString()).gt("ends_at",start.toISOString()).limit(1);
       if(conflictError)throw conflictError;
       if(conflict&&conflict.length){setMessage("This time overlaps an existing appointment. Please choose another slot.");setBusy(false);return;}
