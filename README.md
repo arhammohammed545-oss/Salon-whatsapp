@@ -14,16 +14,39 @@ A compliant salon customer-management and appointment-messaging platform built a
 ## Stack
 
 - Next.js App Router + TypeScript
-- Supabase / PostgreSQL
+- Supabase Auth + PostgreSQL
+- Supabase SSR cookie sessions
 - Meta WhatsApp Cloud API
-- Scheduled jobs for reminders
 
 ## Getting started
 
-1. Install Node.js 20 or newer.
-2. Install dependencies: `npm install`
-3. Copy `.env.example` to `.env.local` and fill in the values.
-4. Start development: `npm run dev`
+1. Use Node.js 20 or newer.
+2. Install dependencies: `npm install`.
+3. Copy `.env.example` to `.env.local`.
+4. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` using the values from the Supabase project Connect dialog.
+5. Start development: `npm run dev`.
+
+Do not place Supabase secret/service-role keys or Meta access tokens in any `NEXT_PUBLIC_*` variable or browser code.
+
+## Owner access setup
+
+The app uses Supabase Auth email/password sign-in. There is no public sign-up screen.
+
+1. In Supabase Dashboard, open Authentication → Users and create/invite the salon owner's account.
+2. After the owner account exists, copy its Auth user UUID.
+3. Add that user to the Kith and Kin workspace using the SQL editor:
+
+```sql
+insert into public.business_members (business_id, user_id, role)
+values (
+  'ceeef97b-a51d-43fd-9437-56db133abb73',
+  'REPLACE_WITH_AUTH_USER_UUID',
+  'owner'
+)
+on conflict (business_id, user_id) do nothing;
+```
+
+4. The owner can then sign in at `/login`. The app checks the signed-in user and database membership; row-level security controls access to salon records.
 
 ## WhatsApp setup
 
@@ -35,6 +58,13 @@ Use the same `WHATSAPP_WEBHOOK_VERIFY_TOKEN` in Meta's webhook verification form
 
 Only message people who have provided valid consent. Business-initiated messages must use approved templates where required. Honor opt-outs promptly, respect Meta quality/rate limits, and do not use unofficial WhatsApp Web automation libraries.
 
-## Current status
+## Current implementation status
 
-Initial scaffold committed: dashboard shell, health endpoint, webhook verification/signature validation, environment template, and initial database migration. Authentication, database access layer, appointment workflows, and asynchronous event processing remain to be implemented.
+- Dashboard shell and responsive styling
+- Supabase core schema with row-level security
+- Supabase SSR browser/server clients and session-refresh middleware
+- Email/password login and sign-out
+- Customer list backed by Supabase, with search and customer creation
+- Customer WhatsApp consent recorded separately and defaults to off
+
+Still pending: create the salon owner's Auth account and workspace membership, configure deployment environment variables, verify a full production build, and implement appointments, services, campaigns, and WhatsApp Cloud API onboarding.
