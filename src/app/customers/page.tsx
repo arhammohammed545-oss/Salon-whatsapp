@@ -2,7 +2,8 @@ import CustomerManager from "./customer-manager";
 import { createClient } from "@/lib/supabase/server";
 
 const navItems = [
-  ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "#"],
+  ["Overview", "⌂", "/"], ["Customers", "♙", "/customers"], ["Appointments", "▦", "/appointments"],
+  ["Services", "✂", "/services"],
   ["Campaigns", "✉", "#"], ["Message templates", "▤", "#"], ["Reports", "▥", "#"], ["Settings", "⚙", "#"]
 ] as const;
 
