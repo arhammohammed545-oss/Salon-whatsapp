@@ -37,7 +37,7 @@ export default function CustomerManager({ businessId, initialCustomers }: { busi
     event.preventDefault();
     setBusy(true);
     setMessage("");
-    if (!/^\\+[1-9]\\d{7,14}$/.test(phone.trim())) {
+    if (!/^\+[1-9]\d{7,14}$/.test(phone.trim())) {
       setMessage("Enter the phone number in international format, for example +919876543210.");
       setBusy(false);
       return;
