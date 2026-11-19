@@ -51,7 +51,7 @@ export default function CustomerManager({ businessId, initialCustomers }: { busi
         notes: notes.trim() || null,
         whatsapp_opt_in: hasConsent,
         opt_in_at: hasConsent ? new Date().toISOString() : null,
-        opt_in_source: hasConsent ? "salon_owner_recorded_customer_consent" : null,
+        opt_in_source: hasConsent ? "business_owner_recorded_customer_consent" : null,
       }).select(customerFields).single();
       if (error) throw error;
       setCustomers(current => [data as Customer, ...current]);
@@ -67,8 +67,8 @@ export default function CustomerManager({ businessId, initialCustomers }: { busi
   async function updateConsent(customer: Customer) {
     const recordingConsent = !customer.whatsapp_opt_in;
     const prompt = recordingConsent
-      ? "Confirm that this customer has just explicitly agreed to receive WhatsApp messages from Kith and Kin."
-      : "Mark this customer as opted out? Glowdesk will exclude them from WhatsApp reminders and campaigns.";
+      ? "Confirm that this customer has just explicitly agreed to receive WhatsApp messages from this business."
+      : "Mark this customer as opted out? They will be excluded from WhatsApp reminders and campaigns.";
     if (!window.confirm(prompt)) return;
 
     setBusyCustomerId(customer.id);
@@ -79,7 +79,7 @@ export default function CustomerManager({ businessId, initialCustomers }: { busi
       const { data, error } = await supabase.from("customers").update(recordingConsent ? {
         whatsapp_opt_in: true,
         opt_in_at: now,
-        opt_in_source: "salon_owner_recorded_customer_consent",
+        opt_in_source: "business_owner_recorded_customer_consent",
         opted_out_at: null,
       } : {
         whatsapp_opt_in: false,
@@ -108,7 +108,7 @@ export default function CustomerManager({ businessId, initialCustomers }: { busi
           <label>Phone number (with country code)<input required maxLength={16} value={phone} onChange={e => setPhone(e.target.value)} placeholder="+919876543210" /></label>
           <label className="notes-field">Notes (optional)<input maxLength={500} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Preferences or useful notes" /></label>
         </div>
-        <label className="consent-check"><input type="checkbox" checked={hasConsent} onChange={e => setHasConsent(e.target.checked)} /> The customer has explicitly agreed to receive WhatsApp messages from Kith and Kin.</label>
+        <label className="consent-check"><input type="checkbox" checked={hasConsent} onChange={e => setHasConsent(e.target.checked)} /> The customer has explicitly agreed to receive WhatsApp messages from this business.</label>
         <p className="form-helper">Leave this unchecked if consent has not been obtained. Booking an appointment does not automatically mean marketing consent.</p>
         {message && <p className="customer-feedback" role="status">{message}</p>}
         <button className="primary-button" type="submit" disabled={busy}>{busy ? "Saving…" : "Save customer"}</button>
@@ -116,7 +116,7 @@ export default function CustomerManager({ businessId, initialCustomers }: { busi
       {!showForm && message && <p className="customer-feedback" role="status">{message}</p>}
       <section className="panel customer-table-panel">
         <div className="customer-table-heading"><div><h2>Customer list</h2><p>{customers.length} saved {customers.length === 1 ? "customer" : "customers"} · {customers.filter(c => c.whatsapp_opt_in && !c.opted_out_at).length} currently opted in</p></div></div>
-        {filtered.length === 0 ? <div className="customer-list-empty"><span>♙</span><strong>{customers.length ? "No matching customers" : "No customers added yet"}</strong><p>{customers.length ? "Try another name or phone number." : "Add the salon's first customer to get started."}</p></div> :
+        {filtered.length === 0 ? <div className="customer-list-empty"><span>♙</span><strong>{customers.length ? "No matching customers" : "No customers added yet"}</strong><p>{customers.length ? "Try another name or phone number." : "Add the first customer to get started."}</p></div> :
           <div className="customer-table-wrap"><table className="customer-table"><thead><tr><th>Customer</th><th>Phone</th><th>WhatsApp consent</th><th>Consent record</th><th>Notes</th><th>Action</th></tr></thead><tbody>{filtered.map(c => {
             const optedIn = c.whatsapp_opt_in && !c.opted_out_at;
             const consentDate = optedIn ? c.opt_in_at : c.opted_out_at;
