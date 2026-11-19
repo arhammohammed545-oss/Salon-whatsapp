@@ -1,8 +1,8 @@
-name: Validate Glowdesk
+name: Validate Salon Messaging App
 
 on:
   push:
-    branches: [main]
+    branches: [main, opensource-preparation]
   pull_request:
     branches: [main]
 
